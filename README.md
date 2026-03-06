@@ -1,41 +1,60 @@
-# TapTap-Spectrum
-# [Your Engine Name] 
-**TaPTaP Game Engine Hackathon 2026 - League 1 Submission** ## 📌 Mission Statement
-[cite_start][Your Engine Name] is a highly modular, reusable web-based learning game engine[cite: 4]. [cite_start]Designed with strict separation of logic and content [cite: 19][cite_start], it is capable of generating multiple playable learning experiences entirely through JSON configuration[cite: 4, 17, 68, 69].
+# TaPTaP Game Engine - Blueprint
+
+**TaPTaP Game Engine Hackathon 2026 - League 1 Submission**
+
+## 📌 Mission Statement
+
+We are designing and building a reusable, web-based learning game engine capable of generating multiple playable learning experiences entirely through configuration. This engine prioritizes system architecture over a single prototype, focusing on scalability, extensibility, and the strict separation of logic and content.
 
 ## 👥 Team
-* **[Your Name]** - System Architecture & Core Logic
-* **[Teammate 2 Name]** - [Role, e.g., Web Rendering / Frontend]
-* **[Teammate 3 Name]** - [Role, e.g., JSON Schema Design]
-* **[Teammate 4 Name]** - [Role]
-*(Note: All members from [Your Institute])* ## 🏗️ Core System Architecture
-Our engine treats game execution as a dynamic state machine. [cite_start]By abstracting the game loop away from the visual assets, we ensure maximum scalability and extensibility[cite: 20]. [cite_start]The system runs purely on web technologies [cite: 67] [cite_start]and is divided into the following modular components[cite: 18]:
 
-1. **Configuration Parser:** Reads the input JSON file, validates the schema, and loads the game rules, text, and assets into memory.
-2. **State Manager (The Core Loop):** The algorithmic heart of the engine. It processes user inputs against the loaded JSON rules and updates the game state efficiently.
-3. **Renderer:** The web-based visual layer (e.g., HTML5 Canvas / DOM) that draws the current state to the screen without holding any core game logic.
+- **Dhiraj Adhikary** - Role: Core Development (Specifics TBD)
+- **Samyak Anil Gaikwad** - Role: Core Development (Specifics TBD)
+  _(Note: Both members are from IIT Guwahati, fulfilling the same-institute requirement)_
+
+## 🏗️ Core System Architecture
+
+Our engine treats game execution as a dynamic state machine. By abstracting the game loop away from the visual assets, we ensure maximum modularity The system runs purely on web technologies and is divided into three distinct layers:
+
+1. **The Data Layer (Configuration):** The JSON file acts as the sole source of truth. It defines the initial state, scoring rules, level structures, and asset paths. This ensures absolute separation of logic and content.
+2. **The Core Engine (State Manager / Controller):** The algorithmic heart of the engine. A parser reads the JSON input and maps it into memory. The Game Loop runs continuously, processing rules against the current state, handling inputs, and determining the next state independently of the visual output.
+3. **The Presentation Layer (Web Renderer):** A lightweight module built on web technologies. It strictly accepts the calculated "current state" from the Core Engine and draws it to the screen, allowing the renderer to be upgraded or swapped without breaking the core logic.
 
 ## ⚙️ JSON-Driven Configuration Schema
-[cite_start]The engine is 100% driven by JSON configuration[cite: 17, 68]. [cite_start]Below is a sample schema demonstrating how a new learning game can be generated without altering the underlying engine code[cite: 69]:
+
+The engine is driven entirely by JSON configuration , allowing it to support multiple games from a single engine. Below is our baseline schema demonstrating how a new learning game (e.g., a logic sequence puzzle) can be generated without altering the underlying engine code:
 
 ```json
 {
   "game_metadata": {
-    "title": "Basic Math Mastery",
-    "learning_objective": "Addition",
-    "win_condition": "score >= 3"
+    "title": "Cipher Lock Override",
+    "learning_objective": "Pattern Recognition and Sequencing",
+    "win_condition": "current_level > total_levels"
   },
   "mechanics": {
-    "type": "multiple_choice",
-    "time_limit_sec": 30
+    "type": "sequence_puzzle",
+    "input_method": "grid_click",
+    "max_mistakes_allowed": 3
+  },
+  "global_assets": {
+    "lock_sound": "/assets/audio/click.mp3",
+    "error_sound": "/assets/audio/buzzer.mp3"
   },
   "levels": [
     {
-      "question": "What is 5 + 7?",
-      "options": ["10", "11", "12", "13"],
-      "correct_answer": "12",
-      "on_success": { "add_score": 1, "next_state": "level_2" },
-      "on_fail": { "reduce_health": 1, "retry": true }
+      "level_id": "1",
+      "puzzle_prompt": "Input the sequence of prime numbers.",
+      "grid_options": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+      "target_sequence": [2, 3, 5, 7],
+      "on_success": {
+        "action": "unlock_animation",
+        "next_state": "level_2"
+      },
+      "on_fail": {
+        "action": "register_mistake",
+        "retry": true
+      }
     }
   ]
 }
+```
