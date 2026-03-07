@@ -10,6 +10,7 @@ We are designing and building a reusable, web-based learning game engine capable
 
 - **Dhiraj Adhikary** - Role: Core Development (Specifics TBD)
 - **Samyak Anil Gaikwad** - Role: Core Development (Specifics TBD)
+
   _(Note: Both members are from IIT Guwahati, fulfilling the same-institute requirement)_
 
 ## 🏗️ Core System Architecture
