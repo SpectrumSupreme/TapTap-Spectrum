@@ -27,7 +27,7 @@ The engine is driven entirely by JSON configuration , allowing it to support mul
 ```json
 {
   "game_metadata": {
-    "title": "Cipher Lock Override",
+    "title": "Spectrum Pattern",
     "learning_objective": "Pattern Recognition and Sequencing",
     "win_condition": "current_level > total_levels"
   },
