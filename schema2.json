@@ -1,0 +1,25 @@
+{
+  "game_metadata": {
+    "title": "Math quiz example"
+  },
+  "mechanics": {
+    "max_mistakes_allowed": 2
+  },
+  "levels": [
+    {
+      "level_id": "1",
+      "puzzle_prompt": "Warmup: Enter the sum of 15 + 27, followed by the product of 6 * 8.",
+      "target_sequence": [42, 48]
+    },
+    {
+      "level_id": "2",
+      "puzzle_prompt": "Algebra: If 3x = 21, what is x? Then, what is 100 divided by 4?",
+      "target_sequence": [7, 25]
+    },
+    {
+      "level_id": "3",
+      "puzzle_prompt": "Enter the square root of 144, then 2 to the power of 5.",
+      "target_sequence": [12, 32]
+    }
+  ]
+}
