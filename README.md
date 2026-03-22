@@ -2,6 +2,12 @@
 
 **Built for the TapTap Hackathon — Checkpoint 3**
 
+## 🏆 Live Demo & Submission Links
+* **🎮 Playable Prototype:** [Play Man vs Math Live Here](https://spectrumsupreme.github.io/TapTap-Spectrum/)
+* **📹 2-Minute Demo Video:** [Paste your video link here when ready]
+
+---
+
 ![C++](https://img.shields.io/badge/C++-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white)
 ![WebAssembly](https://img.shields.io/badge/WebAssembly-654FF0?style=for-the-badge&logo=webassembly&logoColor=white)
 ![SDL2](https://img.shields.io/badge/SDL2-17385E?style=for-the-badge&logo=c&logoColor=white)
@@ -31,20 +37,20 @@ If you are pulling this repository to modify the C++ engine or the `config.json`
 Run the following commands in your Windows PowerShell terminal at the project root:
 
 **1. Bypass Windows Execution Policy (if restricted):**
-```powershell
+~~~powershell
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-```
+~~~
 
 **2. Activate the Emscripten SDK:**
-```powershell
+~~~powershell
 .\emsdk_env.ps1
-```
+~~~
 
 **3. Compile the Engine and Package the Virtual File System:**
 *(Note: We output to `index.js` to preserve the custom Tailwind `index.html` frontend).*
-```bash
+~~~bash
 emcc engine.cpp -o index.js -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS='["png"]' --preload-file images --preload-file config.json -s ALLOW_MEMORY_GROWTH=1
-```
+~~~
 
 ## 🚀 How to Run Locally
 
@@ -69,3 +75,4 @@ To test the compiled build locally:
   * Developed the responsive Tailwind UI, designed the WebGL canvas wrapper, and implemented the JS-to-WASM memory bridge.
 
 ---
+*Built with blood, sweat, and C++ for the TapTap Hackathon.*
