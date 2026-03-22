@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Man vs Math | Engine Prototype</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'tech': ['Orbitron', 'sans-serif'],
+                        'code': ['Fira Code', 'monospace'],
+                    },
+                    colors: {
+                        'neon-orange': '#ff5722',
+                        'neon-blue': '#00e5ff',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom glowing effects */
+        body {
+            background-color: #0f172a;
+            background-image: radial-gradient(#1e293b 1px, transparent 1px);
+            background-size: 20px 20px;
+            font-family: 'Fira Code', monospace;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .glow-text {
+            text-shadow: 0 0 10px rgba(255, 87, 34, 0.7), 0 0 20px rgba(255, 87, 34, 0.5);
+        }
+
+        .canvas-glow {
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.15);
+        }
+
+        /* --- EMSCRIPTEN NATIVE STYLES (Adapted for Dark Mode) --- */
+        .emscripten { padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
+        canvas.emscripten { border: 0px none; background-color: black; outline: none; image-rendering: pixelated; }
+
+        .spinner {
+            height: 30px;
+            width: 30px;
+            margin: 0 auto;
+            display: inline-block;
+            vertical-align: top;
+            -webkit-animation: rotation .8s linear infinite;
+            animation: rotation 0.8s linear infinite;
+            border-left: 5px solid rgba(255, 87, 34, 0.2);
+            border-right: 5px solid rgba(255, 87, 34, 0.2);
+            border-bottom: 5px solid rgba(255, 87, 34, 0.2);
+            border-top: 5px solid #ff5722; 
+            border-radius: 100%;
+        }
+
+        @keyframes rotation {
+            from {transform: rotate(0deg);}
+            to {transform: rotate(360deg);}
+        }
+
+        #status {
+            font-weight: bold;
+            color: #00e5ff;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 2px;
+        }
+
+        progress {
+            accent-color: #00e5ff;
+            height: 8px;
+            width: 100%;
+            background-color: #1e293b;
+            border-radius: 4px;
+        }
+        progress::-webkit-progress-bar {
+            background-color: #1e293b;
+            border-radius: 4px;
+        }
+        progress::-webkit-progress-value {
+            background-color: #00e5ff;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="text-gray-200 min-h-screen flex flex-col font-code">
+
+    <header class="w-full p-6 border-b border-gray-800 bg-gray-900/80 backdrop-blur-sm z-50">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <h1 class="text-3xl md:text-4xl font-tech font-bold text-white tracking-wider glow-text">
+                MAN <span class="text-gray-500 font-code text-2xl">vs</span> MATH
+            </h1>
+            <div class="flex items-center gap-4">
+                <span class="px-3 py-1 bg-gray-800 border border-gray-700 rounded text-sm text-neon-blue font-bold">
+                    WASM ENGINE READY
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto w-full p-6 flex flex-col lg:flex-row gap-8 items-start">
+        
+        <div class="w-full lg:w-2/3 flex flex-col gap-4">
+            
+            <div class="bg-gray-800/50 border border-gray-700 p-4 rounded-lg flex flex-col items-center justify-center min-h-[80px]">
+                <div class="flex items-center gap-4 mb-2">
+                    <div class="spinner" id='spinner'></div>
+                    <div class="emscripten" id="status">Downloading...</div>
+                </div>
+                <div class="w-full max-w-md emscripten">
+                    <progress value="0" max="100" id="progress" hidden=1></progress>
+                </div>
+            </div>
+
+            <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border border-gray-700 canvas-glow group">
+                
+                <div id="main-menu" class="absolute inset-0 z-20 bg-[#0f172a]/95 backdrop-blur-md flex flex-col items-center justify-center transition-opacity duration-500">
+                    <h2 class="text-5xl md:text-7xl font-tech font-bold text-white tracking-widest glow-text mb-4">
+                        MAN <span class="text-gray-500 font-code text-4xl">vs</span> MATH
+                    </h2>
+                    <p class="text-neon-blue font-code mb-10 tracking-widest text-lg">WASM ENGINE READY</p>
+                    
+                    <button onclick="startGame()" class="px-10 py-4 bg-neon-orange hover:bg-orange-600 text-white font-tech font-bold text-2xl rounded shadow-[0_0_20px_rgba(255,87,34,0.6)] transition-all transform hover:scale-110">
+                        START THE GAME
+                    </button>
+                </div>
+
+                <canvas class="emscripten w-full h-full relative z-10" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+            </div>
+
+            <div id='controls' class="flex flex-wrap items-center justify-end bg-gray-900 border border-gray-800 p-3 rounded text-sm text-gray-400">
+                <div class="flex gap-2">
+                    <button class="px-4 py-1 bg-green-900/50 hover:bg-green-800 border border-green-700 rounded text-green-400 transition-colors" 
+                            onclick="Module.resumeMainLoop()">
+                        PLAY
+                    </button>
+                    <button class="px-4 py-1 bg-red-900/50 hover:bg-red-800 border border-red-700 rounded text-red-400 transition-colors" 
+                            onclick="Module.pauseMainLoop()">
+                        PAUSE
+                    </button>
+                    <button class="px-4 py-1 bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded text-white transition-colors ml-2" 
+                            onclick="activateFullscreen()">
+                        FULLSCREEN
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <aside class="w-full lg:w-1/3 flex flex-col gap-6">
+            
+            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+                <h3 class="text-xl font-tech text-white mb-4 border-b border-gray-700 pb-2">CONTROLS</h3>
+                <ul class="space-y-3">
+                    <li class="flex items-center justify-between">
+                        <span class="text-gray-400">Movement</span>
+                        <div class="flex gap-1">
+                            <kbd class="bg-gray-700 px-2 py-1 rounded text-white shadow-sm border border-gray-600">A</kbd>
+                            <kbd class="bg-gray-700 px-2 py-1 rounded text-white shadow-sm border border-gray-600">D</kbd>
+                        </div>
+                    </li>
+                    <li class="flex items-center justify-between">
+                        <span class="text-gray-400">Flight (No Gravity)</span>
+                        <div class="flex gap-1">
+                            <kbd class="bg-gray-700 px-2 py-1 rounded text-white shadow-sm border border-gray-600">W</kbd>
+                            <kbd class="bg-gray-700 px-2 py-1 rounded text-white shadow-sm border border-gray-600">S</kbd>
+                        </div>
+                    </li>
+                    <li class="flex items-center justify-between">
+                        <span class="text-gray-400">Jump</span>
+                        <kbd class="bg-gray-700 px-4 py-1 rounded text-white shadow-sm border border-gray-600">SPACE</kbd>
+                    </li>
+                    <li class="flex items-center justify-between">
+                        <span class="text-gray-400">Fire Weapon</span>
+                        <kbd class="bg-gray-700 px-2 py-1 rounded text-white shadow-sm border border-gray-600">Left Click</kbd>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+                <h3 class="text-xl font-tech text-neon-orange mb-4 border-b border-gray-700 pb-2">GAME RULES</h3>
+                <ul class="space-y-4 text-sm text-gray-300">
+                    <li>
+                        <strong class="text-white">The Charge Shot:</strong> Hold down Left Click to charge your weapon. The longer you hold it, the bigger the bullet and the more damage it deals!
+                    </li>
+                    <li>
+                        <strong class="text-white">I-Frames:</strong> Getting hit by the boss or its math projectiles hurts, but it grants you 1 second of invincibility (flashing) to escape.
+                    </li>
+                    <li>
+                        <strong class="text-white">Phase 2 Earthquake:</strong> When the boss drops below 50% HP, watch the floor! If it flashes <span class="text-orange-400 font-bold">Orange</span>, get ready to jump. If you are touching the ground when it turns <span class="text-red-500 font-bold">Red</span>, you take massive damage.
+                    </li>
+                    <li>
+                        <strong class="text-neon-blue">Data-Driven Engine:</strong> If you edit the <code>config.json</code> file, just click the game screen after a "Game Over" to instantly reload the engine with the new stats.
+                    </li>
+                </ul>
+            </div>
+
+            <div class="bg-blue-900/10 border border-blue-900/50 rounded-xl p-6">
+                <h3 class="text-lg font-tech text-neon-blue mb-2">ENGINE SPECS</h3>
+                <p class="text-sm text-gray-400 mb-2">This game is running natively in the browser using a custom C++ physics engine compiled to WebAssembly via Emscripten.</p>
+                <div class="flex flex-wrap gap-2 mt-4">
+                    <span class="px-2 py-1 bg-gray-900 border border-gray-700 rounded text-xs">C++</span>
+                    <span class="px-2 py-1 bg-gray-900 border border-gray-700 rounded text-xs">SDL2</span>
+                    <span class="px-2 py-1 bg-gray-900 border border-gray-700 rounded text-xs">WASM</span>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <script type='text/javascript'>
+      // --- THE FULLSCREEN FIX (NO POINTER LOCK) ---
+      function activateFullscreen() {
+        var canvas = document.getElementById('canvas');
+        if (canvas.requestFullscreen) {
+          canvas.requestFullscreen();
+        } else if (canvas.webkitRequestFullscreen) { /* Safari */
+          canvas.webkitRequestFullscreen();
+        }
+      }
+
+      // --- MENU LOGIC ---
+      function startGame() {
+        var menu = document.getElementById('main-menu');
+        menu.style.opacity = '0';
+        setTimeout(() => {
+            menu.style.display = 'none';
+            Module.resumeMainLoop(); // Unpause the C++ game!
+        }, 500);
+      }
+
+      // Listen for keyboard input to start the game without clicking
+      document.addEventListener('keydown', function(event) {
+        var menu = document.getElementById('main-menu');
+        if (menu.style.display !== 'none') {
+            if (event.key === 'Enter' || event.key === ' ' || event.key.toLowerCase() === 'w') {
+                startGame();
+            }
+        }
+      });
+
+      var statusElement = document.getElementById('status');
+      var progressElement = document.getElementById('progress');
+      var spinnerElement = document.getElementById('spinner');
+      var canvasElement = document.getElementById('canvas');
+
+      canvasElement.addEventListener('webglcontextlost', (e) => {
+        alert('WebGL context lost. You will need to reload the page.');
+        e.preventDefault();
+      }, false);
+
+      var setStatus = (text) => {
+        if (!setStatus.last) setStatus.last = { time: Date.now(), text: '' };
+        if (text === setStatus.last.text) return;
+        var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+        var now = Date.now();
+        if (m && now - setStatus.last.time < 30) return;
+        setStatus.last.time = now;
+        setStatus.last.text = text;
+        if (m) {
+          text = m[1];
+          progressElement.value = parseInt(m[2])*100;
+          progressElement.max = parseInt(m[4])*100;
+          progressElement.hidden = false;
+          spinnerElement.hidden = false;
+        } else {
+          progressElement.value = null;
+          progressElement.max = null;
+          progressElement.hidden = true;
+          if (!text) spinnerElement.style.display = 'none';
+        }
+        statusElement.innerHTML = text;
+      };
+
+      var Module = {
+        print(...args) {
+          console.log(...args); // Only prints to the hidden dev tools console now
+        },
+        canvas: canvasElement,
+        setStatus: setStatus,
+        totalDependencies: 0,
+        monitorRunDependencies(left) {
+          this.totalDependencies = Math.max(this.totalDependencies, left);
+          setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+        },
+        // FREEZE C++ ENGINE ON LOAD
+        onRuntimeInitialized: function() {
+            setTimeout(() => { Module.pauseMainLoop(); }, 50);
+        }
+      };
+      
+      setStatus('Downloading...');
+      
+      window.onerror = (event) => {
+        setStatus('Exception thrown, see JavaScript console');
+        spinnerElement.style.display = 'none';
+        setStatus = (text) => {
+          if (text) console.error('[post-exception status] ' + text);
+        };
+      };
+    </script>
+    
+    <script async type="text/javascript" src="index.js"></script>
+    
+</body>
+</html>
