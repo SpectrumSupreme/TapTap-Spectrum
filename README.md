@@ -49,4 +49,4 @@ If you are pulling this repo to test locally:
 4. Open a browser (Incognito recommended to avoid WASM caching) and navigate to `http://localhost:8080`.
 
 ---
-*Built with blood, sweat, and C++ for the TapTap Hackathon.*
+
