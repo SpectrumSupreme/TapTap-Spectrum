@@ -24,7 +24,35 @@ Per the hackathon requirements, the engine is fully modular. By modifying the `c
 * **Boss AI:** Switch the state machine from `'bounce'` to `'chase'`, or alter its Phase 2 mechanics (e.g., `'earthquake'`).
 * **Weapon Systems:** Toggle the player's weapon class between `'charge_shot'` and `'auto_rifle'`.
 
-*Note: Edits to the `config.json` file will require running the `emcc` build command to repackage the Emscripten virtual file system (`index.data`).*
+## 💻 Building from Source (Windows PowerShell)
+
+If you are pulling this repository to modify the C++ engine or the `config.json` file, you must recompile the WebAssembly package using Emscripten.
+
+Run the following commands in your Windows PowerShell terminal at the project root:
+
+**1. Bypass Windows Execution Policy (if restricted):**
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+```
+
+**2. Activate the Emscripten SDK:**
+```powershell
+.\emsdk_env.ps1
+```
+
+**3. Compile the Engine and Package the Virtual File System:**
+*(Note: We output to `index.js` to preserve the custom Tailwind `index.html` frontend).*
+```bash
+emcc engine.cpp -o index.js -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS='["png"]' --preload-file images --preload-file config.json -s ALLOW_MEMORY_GROWTH=1
+```
+
+## 🚀 How to Run Locally
+
+To test the compiled build locally:
+1. Ensure you have Python installed.
+2. Open a terminal in the root directory.
+3. Run a local server: `python -m http.server 8080`
+4. Open a browser (Incognito recommended to avoid WASM caching) and navigate to `http://localhost:8080`.
 
 ## 🎮 Game Rules
 
@@ -40,13 +68,4 @@ Per the hackathon requirements, the engine is fully modular. By modifying the `c
 * **Samyak** — *Frontend Architect*
   * Developed the responsive Tailwind UI, designed the WebGL canvas wrapper, and implemented the JS-to-WASM memory bridge.
 
-## 🚀 How to Run Locally
-
-If you are pulling this repo to test locally:
-1. Ensure you have Python installed.
-2. Open a terminal in the root directory.
-3. Run a local server: `python -m http.server 8080`
-4. Open a browser (Incognito recommended to avoid WASM caching) and navigate to `http://localhost:8080`.
-
 ---
-
