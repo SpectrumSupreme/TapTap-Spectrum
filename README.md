@@ -75,4 +75,3 @@ To test the compiled build locally:
   * Developed the responsive Tailwind UI, designed the WebGL canvas wrapper, and implemented the JS-to-WASM memory bridge.
 
 ---
-*Built with blood, sweat, and C++ for the TapTap Hackathon.*
