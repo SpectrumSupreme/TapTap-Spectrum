@@ -4,7 +4,7 @@
 
 ## 🏆 Live Demo & Submission Links
 * **🎮 Playable Prototype:** [Play Man vs Math Live Here](https://spectrumsupreme.github.io/TapTap-Spectrum/)
-* **📹 2-Minute Demo Video:** [Paste your video link here when ready]
+
 
 ---
 
