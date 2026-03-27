@@ -157,7 +157,7 @@ struct GameContext {
     vector<Projectile> bossBullets;
     
     json config;
-    std::string pWeapon, bMove, bPhase2;
+    string pWeapon, bMove, bPhase2;
     int bossTimer, playerIFrames, chargeFrames, autoFireTimer, earthquakeTimer;
     bool isCharging, gameIsRunning;
 };
@@ -178,7 +178,7 @@ void MainLoopStep(void* arg) {
         // DATA-DRIVEN HOT RELOADING: 
         // Instantly parse JSON and inject new behavior without recompiling C++.
         if (event.type == SDL_MOUSEBUTTONDOWN && (ctx->currentState == GAME_OVER || ctx->currentState == VICTORY)) {
-            std::ifstream reloadFile("config.json");
+            ifstream reloadFile("config.json");
             if (reloadFile.is_open()) {
                 ctx->config = json::parse(reloadFile);
                 reloadFile.close();
@@ -241,7 +241,7 @@ void MainLoopStep(void* arg) {
                 if (ctx->chargeFrames < 60) ctx->chargeFrames++; 
             } else if (ctx->isCharging) {
                 float dx = mouseX - (ctx->player->x + 32); float dy = mouseY - (ctx->player->y + 32);
-                float length = std::sqrt(dx * dx + dy * dy);
+                float length = sqrt(dx * dx + dy * dy);
                 if (length > 0) {
                     float vx = (dx / length) * 15.0f; float vy = (dy / length) * 15.0f;
                     // Dynamically scale projectile size and damage based on charge time
@@ -254,7 +254,7 @@ void MainLoopStep(void* arg) {
             if (ctx->autoFireTimer > 0) ctx->autoFireTimer--;
             if ((mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) && ctx->autoFireTimer == 0) {
                 float dx = mouseX - (ctx->player->x + 32); float dy = mouseY - (ctx->player->y + 32);
-                float length = std::sqrt(dx * dx + dy * dy);
+                float length = sqrt(dx * dx + dy * dy);
                 if (length > 0) {
                     float vx = (dx / length) * 20.0f; float vy = (dy / length) * 20.0f; 
                     ctx->playerBullets.push_back({ctx->player->x + 32, ctx->player->y + 32, vx, vy, 8, 8, true, 5}); 
@@ -270,10 +270,10 @@ void MainLoopStep(void* arg) {
             if (ctx->boss->x <= 0 || ctx->boss->x >= 800 - ctx->boss->width) ctx->boss->velocityX *= -1.0f;
             if (ctx->boss->y <= 50.0f || ctx->boss->y >= 300.0f) ctx->boss->velocityY *= -1.0f;
         } else if (ctx->bMove == "chase") {
-            if (ctx->boss->x < ctx->player->x) ctx->boss->x += std::abs(ctx->boss->velocityX);
-            else ctx->boss->x -= std::abs(ctx->boss->velocityX);
-            if (ctx->boss->y < ctx->player->y - 100) ctx->boss->y += std::abs(ctx->boss->velocityY);
-            else ctx->boss->y -= std::abs(ctx->boss->velocityY);
+            if (ctx->boss->x < ctx->player->x) ctx->boss->x += abs(ctx->boss->velocityX);
+            else ctx->boss->x -= abs(ctx->boss->velocityX);
+            if (ctx->boss->y < ctx->player->y - 100) ctx->boss->y += abs(ctx->boss->velocityY);
+            else ctx->boss->y -= abs(ctx->boss->velocityY);
         }
         ctx->boss->UpdatePhysics(ctx->platform->y);
 
@@ -399,7 +399,7 @@ int main(int argc, char *argv[]) {
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
     // Initial JSON Hydration
-    std::ifstream configFile("config.json");
+    ifstream configFile("config.json");
     if (!configFile.is_open()) {
         cout << "CRITICAL ERROR: config.json not found! Check --preload-file flags." << endl;
         return -1;
@@ -413,25 +413,25 @@ int main(int argc, char *argv[]) {
         config["player"].value("has_gravity", true), config["player"]["hp"],
         config["player"]["frame_w"], config["player"]["frame_h"], config["player"]["max_frames"], config["player"]["anim_row"]
     );
-    std::string pSprite = config["player"]["sprite"]; player.LoadTexture(renderer, pSprite.c_str());
+    string pSprite = config["player"]["sprite"]; player.LoadTexture(renderer, pSprite.c_str());
 
     Entity boss(
         config["boss"]["spawn_x"], config["boss"]["spawn_y"], config["boss"]["width"], config["boss"]["height"],
         false, config["boss"]["hp"], config["boss"]["frame_w"], config["boss"]["frame_h"], config["boss"]["max_frames"], config["boss"]["anim_row"]
     );
     boss.velocityX = config["boss"]["speed_x"]; boss.velocityY = config["boss"]["speed_y"];
-    std::string bSprite = config["boss"]["sprite"]; boss.LoadTexture(renderer, bSprite.c_str());
+    string bSprite = config["boss"]["sprite"]; boss.LoadTexture(renderer, bSprite.c_str());
 
     Entity platform(
         config["platform"]["spawn_x"], config["platform"]["spawn_y"], config["platform"]["width"], config["platform"]["height"],
         false, config["platform"]["hp"], config["platform"]["frame_w"], config["platform"]["frame_h"], config["platform"]["max_frames"], config["platform"]["anim_row"]
     );
-    std::string platSprite = config["platform"]["sprite"]; platform.LoadTexture(renderer, platSprite.c_str());
+    string platSprite = config["platform"]["sprite"]; platform.LoadTexture(renderer, platSprite.c_str());
 
     // Setup Background
     SDL_Texture* bgTex = nullptr;
     if (config.contains("background")) {
-        std::string bgSprite = config["background"].value("sprite", "./images/background.png");
+        string bgSprite = config["background"].value("sprite", "./images/background.png");
         SDL_Surface* bgSurf = IMG_Load(bgSprite.c_str());
         if (bgSurf != NULL) {
             bgTex = SDL_CreateTextureFromSurface(renderer, bgSurf);
