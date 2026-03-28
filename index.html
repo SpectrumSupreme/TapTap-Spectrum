@@ -7,19 +7,25 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <!-- Changed to Roboto (YouTube's standard font) -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Fira+Code&display=swap" rel="stylesheet">
     
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        'tech': ['Orbitron', 'sans-serif'],
-                        'code': ['Fira Code', 'monospace'],
+                        'sans': ['Roboto', 'sans-serif'],
+                        'mono': ['Fira Code', 'monospace'],
                     },
                     colors: {
-                        'neon-orange': '#ff5722',
-                        'neon-blue': '#00e5ff',
+                        'yt-bg': '#0f0f0f',
+                        'yt-card': '#212121',
+                        'yt-border': '#3d3d3d',
+                        'yt-text': '#f1f1f1',
+                        'yt-muted': '#aaaaaa',
+                        'yt-red': '#cc0000',
+                        'yt-red-hover': '#ff0000'
                     }
                 }
             }
@@ -27,40 +33,30 @@
     </script>
 
     <style>
-        /* Custom glowing effects */
         body {
-            background-color: #0f172a;
-            background-image: radial-gradient(#1e293b 1px, transparent 1px);
-            background-size: 20px 20px;
-            font-family: 'Fira Code', monospace;
+            background-color: #0f0f0f;
+            color: #f1f1f1;
+            font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 0;
         }
-        
-        .glow-text {
-            text-shadow: 0 0 10px rgba(255, 87, 34, 0.7), 0 0 20px rgba(255, 87, 34, 0.5);
-        }
 
-        .canvas-glow {
-            box-shadow: 0 0 30px rgba(0, 229, 255, 0.15);
-        }
-
-        /* --- EMSCRIPTEN NATIVE STYLES (Adapted for Dark Mode) --- */
+        /* --- EMSCRIPTEN NATIVE STYLES (Cleaned up) --- */
         .emscripten { padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
         canvas.emscripten { border: 0px none; background-color: black; outline: none; image-rendering: pixelated; }
 
         .spinner {
-            height: 30px;
-            width: 30px;
+            height: 24px;
+            width: 24px;
             margin: 0 auto;
             display: inline-block;
             vertical-align: top;
             -webkit-animation: rotation .8s linear infinite;
             animation: rotation 0.8s linear infinite;
-            border-left: 5px solid rgba(255, 87, 34, 0.2);
-            border-right: 5px solid rgba(255, 87, 34, 0.2);
-            border-bottom: 5px solid rgba(255, 87, 34, 0.2);
-            border-top: 5px solid #ff5722; 
+            border-left: 3px solid #3d3d3d;
+            border-right: 3px solid #3d3d3d;
+            border-bottom: 3px solid #3d3d3d;
+            border-top: 3px solid #f1f1f1; 
             border-radius: 100%;
         }
 
@@ -70,174 +66,171 @@
         }
 
         #status {
-            font-weight: bold;
-            color: #00e5ff;
-            font-family: 'Orbitron', sans-serif;
-            letter-spacing: 2px;
+            font-weight: 500;
+            color: #aaaaaa;
+            font-size: 0.9rem;
         }
 
+        /* Styled like a YouTube progress bar */
         progress {
-            accent-color: #00e5ff;
-            height: 8px;
+            accent-color: #ff0000;
+            height: 4px;
             width: 100%;
-            background-color: #1e293b;
-            border-radius: 4px;
+            background-color: #3d3d3d;
+            border-radius: 0px;
         }
         progress::-webkit-progress-bar {
-            background-color: #1e293b;
-            border-radius: 4px;
+            background-color: #3d3d3d;
         }
         progress::-webkit-progress-value {
-            background-color: #00e5ff;
-            border-radius: 4px;
+            background-color: #ff0000;
         }
     </style>
 </head>
-<body class="text-gray-200 min-h-screen flex flex-col font-code">
+<body class="min-h-screen flex flex-col">
 
-    <header class="w-full p-6 border-b border-gray-800 bg-gray-900/80 backdrop-blur-sm z-50">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <h1 class="text-3xl md:text-4xl font-tech font-bold text-white tracking-wider glow-text">
-                MAN <span class="text-gray-500 font-code text-2xl">vs</span> MATH
-            </h1>
-            <div class="flex items-center gap-4">
-                <span class="px-3 py-1 bg-gray-800 border border-gray-700 rounded text-sm text-neon-blue font-bold">
-                    WASM ENGINE READY
-                </span>
-            </div>
-        </div>
+    <!-- Minimal Header -->
+    <header class="w-full px-6 py-4 flex justify-between items-center bg-yt-bg border-b border-yt-border">
+        <h1 class="text-2xl font-black tracking-tight flex items-center gap-2">
+            MAN <span class="font-normal text-yt-muted">vs</span> MATH
+        </h1>
+        <span class="px-2 py-1 bg-yt-card border border-yt-border rounded-md text-xs font-medium text-yt-muted uppercase">
+            WASM Engine
+        </span>
     </header>
 
-    <main class="flex-grow max-w-7xl mx-auto w-full p-6 flex flex-col lg:flex-row gap-8 items-start">
+    <main class="flex-grow max-w-[1600px] mx-auto w-full p-4 lg:p-6 flex flex-col lg:flex-row gap-6 items-start">
         
-        <div class="w-full lg:w-2/3 flex flex-col gap-4">
+        <!-- Left Column: Media Player (Game Canvas) -->
+        <div class="w-full lg:w-[70%] flex flex-col gap-4">
             
-            <div class="bg-gray-800/50 border border-gray-700 p-4 rounded-lg flex flex-col items-center justify-center min-h-[80px]">
-                <div class="flex items-center gap-4 mb-2">
-                    <div class="spinner" id='spinner'></div>
-                    <div class="emscripten" id="status">Downloading...</div>
-                </div>
-                <div class="w-full max-w-md emscripten">
+            <!-- Loading Status Bar -->
+            <div class="flex items-center gap-4 w-full h-8">
+                <div class="spinner" id='spinner'></div>
+                <div class="emscripten" id="status">Downloading...</div>
+                <div class="flex-grow emscripten pl-4">
                     <progress value="0" max="100" id="progress" hidden=1></progress>
                 </div>
             </div>
 
-            <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border border-gray-700 canvas-glow group">
+            <!-- Canvas Container (Styled like a video player) -->
+            <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden shadow-lg group">
                 
-                <div id="main-menu" class="absolute inset-0 z-20 bg-[#0f172a]/95 backdrop-blur-md flex flex-col items-center justify-center transition-opacity duration-500">
-                    <h2 class="text-5xl md:text-7xl font-tech font-bold text-white tracking-widest glow-text mb-4">
-                        MAN <span class="text-gray-500 font-code text-4xl">vs</span> MATH
+                <!-- Main Menu Overlay -->
+                <div id="main-menu" class="absolute inset-0 z-20 bg-black/80 flex flex-col items-center justify-center transition-opacity duration-500">
+                    <h2 class="text-5xl md:text-6xl font-black text-white mb-2">
+                        MAN <span class="font-normal text-yt-muted text-4xl">vs</span> MATH
                     </h2>
-                    <p class="text-neon-blue font-code mb-10 tracking-widest text-lg">WASM ENGINE READY</p>
+                    <p class="text-yt-muted mb-8 text-sm uppercase tracking-widest font-medium">Ready to play</p>
                     
-                    <button onclick="startGame()" class="px-10 py-4 bg-neon-orange hover:bg-orange-600 text-white font-tech font-bold text-2xl rounded shadow-[0_0_20px_rgba(255,87,34,0.6)] transition-all transform hover:scale-110">
-                        START THE GAME
+                    <button onclick="startGame()" class="px-8 py-3 bg-yt-red hover:bg-yt-red-hover text-white font-medium text-lg rounded-full transition-colors flex items-center gap-2">
+                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        Play Game
                     </button>
                 </div>
 
-                <canvas class="emscripten w-full h-full relative z-10" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+                <canvas class="emscripten w-full h-full relative z-10 block" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
             </div>
 
-            <div id='controls' class="flex flex-wrap items-center justify-end bg-gray-900 border border-gray-800 p-3 rounded text-sm text-gray-400">
-                <div class="flex gap-2">
-                    <button class="px-4 py-1 bg-green-900/50 hover:bg-green-800 border border-green-700 rounded text-green-400 transition-colors" 
-                            onclick="Module.resumeMainLoop()">
-                        PLAY
+            <!-- Video-style Controls Row -->
+            <div id='controls' class="flex items-center justify-between mt-1 px-1">
+                <div class="flex gap-3">
+                    <button class="flex items-center gap-2 text-sm font-medium text-yt-text hover:text-white transition-colors" onclick="Module.resumeMainLoop()">
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Play
                     </button>
-                    <button class="px-4 py-1 bg-red-900/50 hover:bg-red-800 border border-red-700 rounded text-red-400 transition-colors" 
-                            onclick="Module.pauseMainLoop()">
-                        PAUSE
-                    </button>
-                    <button class="px-4 py-1 bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded text-white transition-colors ml-2" 
-                            onclick="activateFullscreen()">
-                        FULLSCREEN
+                    <button class="flex items-center gap-2 text-sm font-medium text-yt-text hover:text-white transition-colors" onclick="Module.pauseMainLoop()">
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg> Pause
                     </button>
                 </div>
+                <button class="text-sm font-medium text-yt-text hover:text-white transition-colors" onclick="activateFullscreen()">
+                    <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+                </button>
+            </div>
+            
+            <!-- Game Title / Info below player -->
+            <div class="mt-2 border-b border-yt-border pb-4">
+                <h2 class="text-xl font-bold">Man vs Math: Engine Prototype</h2>
+                <p class="text-sm text-yt-muted mt-1">C++ SDL2 compiled to WebAssembly.</p>
             </div>
         </div>
 
-        <aside class="w-full lg:w-1/3 flex flex-col gap-6">
+        <!-- Right Column: Sidebar (Cards) -->
+        <aside class="w-full lg:w-[30%] flex flex-col gap-4">
             
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                <h3 class="text-xl font-tech text-white mb-4 border-b border-gray-700 pb-2">CONTROLS</h3>
-                <ul class="space-y-3">
+            <!-- Controls Card -->
+            <div class="bg-yt-card rounded-xl p-5">
+                <h3 class="text-base font-bold text-yt-text mb-4">Controls</h3>
+                <ul class="space-y-3 text-sm">
                     <li class="flex items-center justify-between">
-                        <span class="text-gray-400">Movement</span>
-                        <div class="flex gap-1">
-                            <kbd class="bg-gray-700 px-2 py-1 rounded text-white shadow-sm border border-gray-600">A</kbd>
-                            <kbd class="bg-gray-700 px-2 py-1 rounded text-white shadow-sm border border-gray-600">D</kbd>
+                        <span class="text-yt-muted">Movement</span>
+                        <div class="flex gap-1 font-mono text-xs">
+                            <span class="bg-[#333] px-2 py-1 rounded text-white">A</span>
+                            <span class="bg-[#333] px-2 py-1 rounded text-white">D</span>
                         </div>
                     </li>
                     <li class="flex items-center justify-between">
-                        <span class="text-gray-400">Flight (No Gravity)</span>
-                        <div class="flex gap-1">
-                            <kbd class="bg-gray-700 px-2 py-1 rounded text-white shadow-sm border border-gray-600">W</kbd>
-                            <kbd class="bg-gray-700 px-2 py-1 rounded text-white shadow-sm border border-gray-600">S</kbd>
+                        <span class="text-yt-muted">Flight / Vertical</span>
+                        <div class="flex gap-1 font-mono text-xs">
+                            <span class="bg-[#333] px-2 py-1 rounded text-white">W</span>
+                            <span class="bg-[#333] px-2 py-1 rounded text-white">S</span>
                         </div>
                     </li>
                     <li class="flex items-center justify-between">
-                        <span class="text-gray-400">Jump</span>
-                        <kbd class="bg-gray-700 px-4 py-1 rounded text-white shadow-sm border border-gray-600">SPACE</kbd>
+                        <span class="text-yt-muted">Jump</span>
+                        <span class="bg-[#333] px-3 py-1 rounded text-white font-mono text-xs">SPACE</span>
                     </li>
                     <li class="flex items-center justify-between">
-                        <span class="text-gray-400">Fire Weapon</span>
-                        <kbd class="bg-gray-700 px-2 py-1 rounded text-white shadow-sm border border-gray-600">Left Click</kbd>
+                        <span class="text-yt-muted">Fire Weapon</span>
+                        <span class="bg-[#333] px-2 py-1 rounded text-white font-mono text-xs">L-Click</span>
                     </li>
                 </ul>
             </div>
 
-            <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                <h3 class="text-xl font-tech text-neon-orange mb-4 border-b border-gray-700 pb-2">GAME RULES</h3>
-                <ul class="space-y-4 text-sm text-gray-300">
+            <!-- Game Rules Card -->
+            <div class="bg-yt-card rounded-xl p-5">
+                <h3 class="text-base font-bold text-yt-text mb-3">Game Mechanics</h3>
+                <ul class="space-y-3 text-sm text-yt-muted">
                     <li>
-                        <strong class="text-white">The Charge Shot:</strong> Hold down Left Click to charge your weapon. The longer you hold it, the bigger the bullet and the more damage it deals!
+                        <strong class="text-yt-text block mb-1">Charge Shot</strong>
+                        Hold Left Click to charge. Longer holds equal larger, stronger projectiles.
                     </li>
                     <li>
-                        <strong class="text-white">I-Frames:</strong> Getting hit by the boss or its math projectiles hurts, but it grants you 1 second of invincibility (flashing) to escape.
+                        <strong class="text-yt-text block mb-1">I-Frames</strong>
+                        Taking damage grants 1 second of invincibility to escape.
                     </li>
                     <li>
-                        <strong class="text-white">Phase 2 Earthquake:</strong> When the boss drops below 50% HP, watch the floor! If it flashes <span class="text-orange-400 font-bold">Orange</span>, get ready to jump. If you are touching the ground when it turns <span class="text-red-500 font-bold">Red</span>, you take massive damage.
+                        <strong class="text-yt-text block mb-1">Phase 2 Earthquake</strong>
+                        <span class="text-[#ff8800]">Orange flash</span> = Get ready. <span class="text-yt-red">Red flash</span> = Jump immediately to avoid damage.
                     </li>
                     <li>
-                        <strong class="text-neon-blue">Data-Driven Engine:</strong> If you edit the <code>config.json</code> file, just click the game screen after a "Game Over" to instantly reload the engine with the new stats.
+                        <strong class="text-yt-text block mb-1">JSON Reload</strong>
+                        Edit config.json and click after Game Over to hot-reload stats.
                     </li>
                 </ul>
-            </div>
-
-            <div class="bg-blue-900/10 border border-blue-900/50 rounded-xl p-6">
-                <h3 class="text-lg font-tech text-neon-blue mb-2">ENGINE SPECS</h3>
-                <p class="text-sm text-gray-400 mb-2">This game is running natively in the browser using a custom C++ physics engine compiled to WebAssembly via Emscripten.</p>
-                <div class="flex flex-wrap gap-2 mt-4">
-                    <span class="px-2 py-1 bg-gray-900 border border-gray-700 rounded text-xs">C++</span>
-                    <span class="px-2 py-1 bg-gray-900 border border-gray-700 rounded text-xs">SDL2</span>
-                    <span class="px-2 py-1 bg-gray-900 border border-gray-700 rounded text-xs">WASM</span>
-                </div>
             </div>
         </aside>
     </main>
 
+    <!-- EMSCRIPTEN JAVASCRIPT LOGIC -->
     <script type='text/javascript'>
-      // --- THE FULLSCREEN FIX (NO POINTER LOCK) ---
       function activateFullscreen() {
         var canvas = document.getElementById('canvas');
         if (canvas.requestFullscreen) {
           canvas.requestFullscreen();
-        } else if (canvas.webkitRequestFullscreen) { /* Safari */
+        } else if (canvas.webkitRequestFullscreen) {
           canvas.webkitRequestFullscreen();
         }
       }
 
-      // --- MENU LOGIC ---
       function startGame() {
         var menu = document.getElementById('main-menu');
         menu.style.opacity = '0';
         setTimeout(() => {
             menu.style.display = 'none';
-            Module.resumeMainLoop(); // Unpause the C++ game!
+            Module.resumeMainLoop();
         }, 500);
       }
 
-      // Listen for keyboard input to start the game without clicking
       document.addEventListener('keydown', function(event) {
         var menu = document.getElementById('main-menu');
         if (menu.style.display !== 'none') {
@@ -282,7 +275,7 @@
 
       var Module = {
         print(...args) {
-          console.log(...args); // Only prints to the hidden dev tools console now
+          console.log(...args); 
         },
         canvas: canvasElement,
         setStatus: setStatus,
@@ -291,7 +284,6 @@
           this.totalDependencies = Math.max(this.totalDependencies, left);
           setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
         },
-        // FREEZE C++ ENGINE ON LOAD
         onRuntimeInitialized: function() {
             setTimeout(() => { Module.pauseMainLoop(); }, 50);
         }
